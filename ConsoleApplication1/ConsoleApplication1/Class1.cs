@@ -6,14 +6,34 @@ using System.Threading.Tasks;
 
 namespace ConsoleApplication1
 {
-    class Car
+    class Car:Jarmu
     {
-        private string maker;
-        private string type;
-        private int year;
         private double motortype;
         private string fueltype;
         private double averageconsumption;
+    
+        private static List<double> motortypes = new List<double>();
+
+        private static int numberofinstances = 0;
+
+        public static void IncreaseNumberOfInstances()
+        {
+            Car.numberofinstances++;
+        }
+
+        public static int GetNumberOfInstances()
+        {
+            return Car.numberofinstances;
+        }
+
+        static Car()
+        {
+            Car.motortypes.Add(1.4);
+            Car.motortypes.Add(1.6);
+            Car.motortypes.Add(1.8);
+            Car.motortypes.Add(2.0);
+            Car.motortypes.Add(2.3);
+        }
 
         public string Maker
         {
@@ -41,7 +61,7 @@ namespace ConsoleApplication1
             }
         }
 
-        public static int Year
+        public int Year
         {
             get
             {
@@ -88,28 +108,26 @@ namespace ConsoleApplication1
             }
         }
 
-        public Car(string maker, string type, int year, double motortype, string fueltype, double averageconsumption)
+        public Car(string maker, string type, int year, double motortype, string fueltype, double averageconsumption):base(maker, type, year)
         {
-            this.maker = maker;
-            this.type = type;
-            if(1000<=year && year <= 2050)
-            {
-                this.year = year;
-            }
             this.motortype = motortype;
             this.fueltype = fueltype;
             this.averageconsumption = averageconsumption;
+
+            Car.IncreaseNumberOfInstances();
         }
 
-        public Car(string maker, string type, int year, double motortype)
+        public Car(string maker, string type, int year, double motortype):base(maker, type, year)
         {
-            this.maker = maker;
-            this.type = type;
-            if (1998 <= year && year <= 2018)
+            if (Car.motortypes.Contains(motortype))
             {
-                this.year = year;
+                this.motortype = motortype;
             }
-            this.motortype = MotorType;
+            else
+            {
+                Car.motortypes.Add(motortype);
+                this.motortype = motortype;
+            }
             this.fueltype = "Benzin";
             if(motortype == 1.4)
             {
@@ -127,11 +145,20 @@ namespace ConsoleApplication1
             {
                 this.averageconsumption = 5;
             }
+
+            Car.IncreaseNumberOfInstances();
         }
 
         public void ChangeEngine(double motortype, string fueltype, double averageconsumption)
         {
-            this.motortype = motortype;
+            if (Car.motortypes.Contains(motortype)){
+                this.motortype = motortype;
+            }
+            else
+            {
+                Car.motortypes.Add(motortype);
+                this.motortype = motortype;
+            }
             this.fueltype = fueltype;
             this.averageconsumption = averageconsumption;
         }
@@ -155,9 +182,19 @@ namespace ConsoleApplication1
             return (kmnum * this.averageconsumption * fuelprice) / 100;
         }
 
+        public double GetCost(double kmnum, double fuelprice, double ftpereuro)
+        {
+            return (kmnum * this.averageconsumption * fuelprice) / 100 / ftpereuro;
+        }
+
+        public override double GetSpeed(double kmnum, double time)
+        {
+            return kmnum / time;
+        }
+
         public override String ToString()
         {
-            return this.maker + " " + this.type + " " + this.year + " " + this.motortype + " l engine " + this.fueltype + " " + this.averageconsumption + " l/100km ";
+            return base.ToString() + " " + this.motortype + " l engine " + this.fueltype + " " + this.averageconsumption + " l/100km ";
         }
 
 
